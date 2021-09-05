@@ -1,9 +1,9 @@
 #include "server.h"
+#include <stdio.h>
 
 #ifdef _WIN32
 #include "windowsNetworking.h"
 #include <winsock2.h>
-#include <stdio.h>
 
 void run_server() {
     run_win_server();
@@ -34,9 +34,7 @@ void run_win_server() {
     c = sizeof(struct sockaddr_in);
     while((new_socket = accept(s, (struct sockaddr *) &client, &c)) != INVALID_SOCKET) {
         puts("Connection accepted");
-        
-        char *message = "Hello Client , I have received your connection. But I have to go now, bye\n";        
-        send(new_socket , message , strlen(message) , 0);
+        CreateThread(NULL, 0, win_server_socket_thread, (void *)&new_socket, 0, NULL);
     }
 
     if(new_socket == INVALID_SOCKET) {
@@ -46,4 +44,17 @@ void run_win_server() {
 
     closesocket(s);
     WSACleanup();
+}
+
+DWORD WINAPI win_server_socket_thread(void * data) {
+    SOCKET new_socket = *(SOCKET *) data;
+    char *message = "Hello Client , I have received your connection. But I have to go now, bye\n";
+    send(new_socket , message , strlen(message) , 0);
+    char msg[500]="";
+    recv(new_socket, msg, 500, 0);
+    printf("%s", msg);
+    Sleep(10000);
+    closesocket(new_socket);
+    printf("Client Disconnected from Server");
+    return 0;
 }

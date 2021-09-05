@@ -1,5 +1,4 @@
 #include "windowsNetworking.h"
-#include "logger.h"
 #include <winsock2.h>
 #include <stdio.h>
 
