@@ -11,6 +11,8 @@ void run_server() {
 
 #endif
 
+#include "messageProcessing.h"
+
 void run_win_server() {    
     WSADATA wsa;
 	SOCKET s, new_socket;
@@ -48,13 +50,16 @@ void run_win_server() {
 
 DWORD WINAPI win_server_socket_thread(void * data) {
     SOCKET new_socket = *(SOCKET *) data;
-    char *message = "Hello Client , I have received your connection. But I have to go now, bye\n";
-    send(new_socket , message , strlen(message) , 0);
-    char msg[500]="";
-    recv(new_socket, msg, 500, 0);
-    printf("%s", msg);
-    Sleep(10000);
+    char msg[1024]="";
+    while(recv(new_socket, msg, 1024, 0)) {
+        char command[10]="";
+        char value[10]="";
+        char message[100]="";
+        stringTokenize(&msg, &command, &value);
+        performOperation(&command, &value, &message);
+        send(new_socket, message, strlen(message), 0);
+    }
     closesocket(new_socket);
-    printf("Client Disconnected from Server");
+    puts("Client Disconnected from Server");
     return 0;
 }

@@ -1,7 +1,7 @@
 CC = gcc
 CFLAGS   = -g -c -Wall
 LDFLAGS = -lws2_32
-OBJFILES = main.o server.o windowsNetworking.o
+OBJFILES = main.o server.o windowsNetworking.o messageProcessing.o
 TARGET = app
 
 #builds the project
@@ -17,6 +17,9 @@ server.o: server.c
 
 windowsNetworking.o: windowsNetworking.c
 	$(CC) $(CFLAGS) windowsNetworking.c
+
+messageProcessing.o: messageProcessing.c
+	$(CC) $(CFLAGS) messageProcessing.c
 
 #cleans the build directory
 clean:
