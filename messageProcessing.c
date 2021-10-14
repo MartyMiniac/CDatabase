@@ -1,49 +1,49 @@
 #include <stdio.h>
 #include <string.h>
-#define db_size 10
+#include <stdbool.h>
+#include <stdlib.h>
 
-static int db[db_size];
-static int pos=0;
-void stringTokenize(char * msg, char * command, char * value) {
-    int offset=0, pos=0;
-    char ch=' ';
-    
-    while((ch=msg[pos])!='\0') {
-        if(ch==' '||ch=='\n') {
-            command[pos-offset]='\0';
-            break;
+#include "datahandler.h"
+
+void stringTokenize(char * msg, char ** inputs) {
+    bool quoteOpen=false;
+    int index=0, pos=0;
+    char * buf = malloc(sizeof(char)*100);
+    strcpy(buf, "");
+
+    for(int i=0; msg[i]!='\n'; i++) {
+        if(!quoteOpen && (msg[i]==' ' || msg[i]=='\n')) {
+            inputs[index]=buf;
+            buf=malloc(sizeof(char)*100);
+            strcpy(buf, "");
+            index++;
+            continue;
         }
-
-        command[pos-offset]=msg[pos];
+        
+        if(msg[i]=='"') {
+            quoteOpen=!quoteOpen;
+            continue;
+        }
+        
+        strncat(buf, &msg[i], 1);
         pos++;
     }
 
-    pos++;
-    offset=pos;
-
-    while((ch=msg[pos])!='\0') {
-        if(ch==' '||ch=='\n') {
-            value[pos-offset]='\0';
-            break;
-        }
-
-        value[pos-offset]=msg[pos];
-        pos++;
-    }
+    inputs[2]=buf;    
 }
 
-void performOperation(char * command, char * value, char * message) {
-    int val=atoi(value);
-    if(strcmp(command, "add")==0) {
-        db[pos++%db_size]=val;
+void performOperation(char ** inputs, char * message) {
+    if(strcmp(inputs[0], "add")==0) {
+        datahandler_addData(inputs[1], inputs[2]);
         strcpy(message, "data added");
     }
-    else if(strcmp(command, "get")==0) {
-        if(val>-1 && val<pos) {
-            sprintf(message, "%d", db[val]);
+    else if(strcmp(inputs[0], "get")==0) {
+        char * val=datahandler_getData(inputs[1]);
+        if(val!=NULL) {
+            sprintf(message, "%s", val);
         }
         else {
-            strcpy(message, "index not available");
+            strcpy(message, "key not found");
         }
     }
     else {

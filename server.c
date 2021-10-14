@@ -52,11 +52,11 @@ DWORD WINAPI win_server_socket_thread(void * data) {
     SOCKET new_socket = *(SOCKET *) data;
     char msg[1024]="";
     while(recv(new_socket, msg, 1024, 0)) {
-        char command[10]="";
-        char value[10]="";
+        printf("%s\n", msg);
+        char * inputs[3];
         char message[100]="";
-        stringTokenize(&msg, &command, &value);
-        performOperation(&command, &value, &message);
+        stringTokenize(&msg, inputs);
+        performOperation(inputs, &message);
         send(new_socket, message, strlen(message), 0);
     }
     closesocket(new_socket);

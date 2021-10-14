@@ -1,2 +1,2 @@
-void stringTokenize(char * msg, char * command, char * value);
-void performOperation(char * command, char * value, char * message);
+void stringTokenize(char * msg, char ** inputs);
+void performOperation(char ** inputs, char * message);

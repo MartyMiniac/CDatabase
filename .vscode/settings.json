@@ -2,7 +2,8 @@
     "files.associations": {
         "stdio.h": "c",
         "logger.h": "c",
-        "windowsnetworking.h": "c"
+        "windowsnetworking.h": "c",
+        "messageprocessing.h": "c"
     },
     "C_Cpp.errorSquiggles": "Enabled"
 }
